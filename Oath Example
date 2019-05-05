@@ -1,0 +1,54 @@
+
+// callback file for an oath app example
+
+<?php
+
+  $code = $_GET['code'];
+  //e43895537508b4f8aaa2
+   
+  if($code == ""){
+	  header('Location: http://localhost/user/');
+	  exit;
+  }
+
+  $CLIENT_ID = "bc120beb678a7cb6fdfc";
+  $CLIENT_SECRET = "31f0bca67356d57c82510dc42ef47bac5ea5936c";
+  $URL = "https://github.com/login/oauth/access_token";
+  //POST https://github.com/login/oauth/access_token
+  
+  
+  //client_secret, client_id, code
+  $postParams = [
+     'client_id' => $CLIENT_ID,
+     'client_secret' => $CLIENT_SECRET,
+	 'code' => $code
+  
+  ];
+  
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $URL);
+  curl_setopt($ch, CURLOPT_POST, 1);
+  curl_setopt($ch, CURLOPT_POSTFIELDS,$postParams);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+  curl_setopt($ch,CURLOPT_HTTPHEADER,array('Accept: application/json'));
+  $response = curl_exec($ch);
+  curl_close($ch);
+  
+  $data = json_decode($response);
+  
+  //Store token
+  if($data->access_token !=""){
+	  session_start();
+  $_SESSION['my_access_token_accessToken'] = $data->access_token;
+	  header('Location: http://localhost/user/');
+	  exit;
+	  
+  }
+  
+  echo $data->error_description;
+  
+  //var_dump($data);
+  
+  
+  
+?>
